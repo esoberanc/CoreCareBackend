@@ -79,9 +79,7 @@ for r in readings:
         resultados[metrica] = {
             "value": valor,
             "ts": r.get("ts", "")
-        }
-
-
+        
             }
 
     if resultados:

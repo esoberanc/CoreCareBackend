@@ -1,6 +1,7 @@
 from flask import Flask, jsonify
 import requests
 import os
+from flask import request
 
 app = Flask(__name__)
 
@@ -32,13 +33,17 @@ def puerta():
 
 @app.route("/api/calidad-aire")
 def calidad_aire():
+    serial = request.args.get("serial")
+    if not serial:
+        return jsonify({"error": "Falta el parámetro serial"}), 400
+
     url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
     res = requests.get(url, headers=HEADERS)
     readings = res.json()
 
     resultados = {}
     for r in readings:
-        if r["serial"] == SENSOR_MT15_SERIAL:
+        if r["serial"] == serial:
             resultados[r["metric"]] = {
                 "value": r["value"],
                 "ts": r["ts"]
@@ -47,7 +52,8 @@ def calidad_aire():
     if resultados:
         return jsonify(resultados)
     else:
-        return jsonify({"error": "No data found for MT15"}), 404
+        return jsonify({"error": f"No data found for serial {serial}"}), 404
+
 
 if __name__ == "__main__":
     app.run()

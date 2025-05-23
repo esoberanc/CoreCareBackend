@@ -55,9 +55,9 @@ def calidad_aire():
     resultados = {}
     for r in readings:
         if r.get("serial") == serial:
-        metrica = r.get("metric")
-        if not metrica:
-            continue  # si no hay metrica, salta a la siguiente
+            metrica = r.get("metric")
+            if not metrica:
+                continue  # si no hay metrica, salta a la siguiente
         valor = None
 
         if metrica == "co2":

@@ -44,7 +44,7 @@ def calidad_aire():
         return jsonify({
             "error": "Meraki API call failed",
             "status_code": res.status_code,
-            "message": res.text  # esto te mostrará el error real
+            "message": res.text
         }), res.status_code
 
     try:
@@ -55,15 +55,34 @@ def calidad_aire():
     resultados = {}
     for r in readings:
         if r["serial"] == serial:
-            resultados[r["metric"]] = {
-                "value": r["value"],
-                "ts": r["ts"]
+            metrica = r["metric"]
+            valor = None
+
+            if metrica == "co2":
+                valor = r["co2"].get("concentration")
+            elif metrica == "temperature":
+                valor = r["temperature"].get("celsius")
+            elif metrica == "humidity":
+                valor = r["humidity"].get("relativePercentage")
+            elif metrica == "pm25":
+                valor = r["pm25"].get("concentration")
+            elif metrica == "noise":
+                valor = r["noise"]["ambient"].get("level")
+            elif metrica == "tvoc":
+                valor = r["tvoc"].get("concentration")
+            elif metrica == "indoorAirQuality":
+                valor = r["indoorAirQuality"].get("score")
+
+            resultados[metrica] = {
+                "value": valor,
+                "ts": r.get("ts", "")
             }
 
     if resultados:
         return jsonify(resultados)
     else:
         return jsonify({"error": f"No se encontraron métricas para el sensor {serial}"}), 404
+
 
 
 

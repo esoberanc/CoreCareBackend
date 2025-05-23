@@ -54,28 +54,29 @@ def calidad_aire():
 
     resultados = {}
     for r in readings:
-        if r["serial"] == serial:
+        if r.get("serial") == serial and "metric" in r:
             metrica = r["metric"]
             valor = None
 
-            if metrica == "co2":
-                valor = r["co2"].get("concentration")
-            elif metrica == "temperature":
-                valor = r["temperature"].get("celsius")
-            elif metrica == "humidity":
-                valor = r["humidity"].get("relativePercentage")
-            elif metrica == "pm25":
-                valor = r["pm25"].get("concentration")
-            elif metrica == "noise":
-                valor = r["noise"]["ambient"].get("level")
-            elif metrica == "tvoc":
-                valor = r["tvoc"].get("concentration")
-            elif metrica == "indoorAirQuality":
-                valor = r["indoorAirQuality"].get("score")
+           if metrica == "co2":
+            valor = r.get("co2", {}).get("concentration")
+        elif metrica == "temperature":
+            valor = r.get("temperature", {}).get("celsius")
+        elif metrica == "humidity":
+            valor = r.get("humidity", {}).get("relativePercentage")
+        elif metrica == "pm25":
+            valor = r.get("pm25", {}).get("concentration")
+        elif metrica == "noise":
+            valor = r.get("noise", {}).get("ambient", {}).get("level")
+        elif metrica == "tvoc":
+            valor = r.get("tvoc", {}).get("concentration")
+        elif metrica == "indoorAirQuality":
+            valor = r.get("indoorAirQuality", {}).get("score")
 
-            resultados[metrica] = {
-                "value": valor,
-                "ts": r.get("ts", "")
+        resultados[metrica] = {
+            "value": valor,
+            "ts": r.get("ts", "")
+
             }
 
     if resultados:

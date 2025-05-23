@@ -58,7 +58,7 @@ def calidad_aire():
             metrica = r["metric"]
             valor = None
 
-           if metrica == "co2":
+        if metrica == "co2":
             valor = r.get("co2", {}).get("concentration")
         elif metrica == "temperature":
             valor = r.get("temperature", {}).get("celsius")

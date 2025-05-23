@@ -53,12 +53,11 @@ def calidad_aire():
         return jsonify({"error": "No se pudo decodificar JSON", "detalle": str(e), "raw": res.text}), 500
 
     resultados = {}
-for r in readings:
-    if r.get("serial") == serial:
+    for r in readings:
+        if r.get("serial") == serial:
         metrica = r.get("metric")
         if not metrica:
             continue  # si no hay metrica, salta a la siguiente
-
         valor = None
 
         if metrica == "co2":

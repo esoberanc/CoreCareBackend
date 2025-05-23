@@ -53,33 +53,36 @@ def calidad_aire():
         return jsonify({"error": "No se pudo decodificar JSON", "detalle": str(e), "raw": res.text}), 500
 
     resultados = {}
-    for r in readings:
-        if r.get("serial") == serial:
-            metrica = r.get("metric")
-            if not metrica:
-                continue  # si no hay metrica, salta a la siguiente
-        valor = None
+for r in readings:
+    if r.get("serial") != serial:
+        continue
 
-        if metrica == "co2":
-            valor = r.get("co2", {}).get("concentration")
-        elif metrica == "temperature":
-            valor = r.get("temperature", {}).get("celsius")
-        elif metrica == "humidity":
-            valor = r.get("humidity", {}).get("relativePercentage")
-        elif metrica == "pm25":
-            valor = r.get("pm25", {}).get("concentration")
-        elif metrica == "noise":
-            valor = r.get("noise", {}).get("ambient", {}).get("level")
-        elif metrica == "tvoc":
-            valor = r.get("tvoc", {}).get("concentration")
-        elif metrica == "indoorAirQuality":
-            valor = r.get("indoorAirQuality", {}).get("score")
+    metrica = r.get("metric")
+    if not metrica:
+        continue  # si no hay metrica, saltamos
 
-        resultados[metrica] = {
-            "value": valor,
-            "ts": r.get("ts", "")
-        
-            }
+    valor = None
+
+    if metrica == "co2":
+        valor = r.get("co2", {}).get("concentration")
+    elif metrica == "temperature":
+        valor = r.get("temperature", {}).get("celsius")
+    elif metrica == "humidity":
+        valor = r.get("humidity", {}).get("relativePercentage")
+    elif metrica == "pm25":
+        valor = r.get("pm25", {}).get("concentration")
+    elif metrica == "noise":
+        valor = r.get("noise", {}).get("ambient", {}).get("level")
+    elif metrica == "tvoc":
+        valor = r.get("tvoc", {}).get("concentration")
+    elif metrica == "indoorAirQuality":
+        valor = r.get("indoorAirQuality", {}).get("score")
+
+    resultados[metrica] = {
+        "value": valor,
+        "ts": r.get("ts", "")
+    }
+
 
     if resultados:
         return jsonify(resultados)

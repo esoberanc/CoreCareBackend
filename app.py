@@ -39,7 +39,18 @@ def calidad_aire():
 
     url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
     res = requests.get(url, headers=HEADERS)
-    readings = res.json()
+
+    if res.status_code != 200:
+        return jsonify({
+            "error": "Meraki API call failed",
+            "status_code": res.status_code,
+            "message": res.text  # esto te mostrará el error real
+        }), res.status_code
+
+    try:
+        readings = res.json()
+    except Exception as e:
+        return jsonify({"error": "No se pudo decodificar JSON", "detalle": str(e), "raw": res.text}), 500
 
     resultados = {}
     for r in readings:
@@ -52,7 +63,8 @@ def calidad_aire():
     if resultados:
         return jsonify(resultados)
     else:
-        return jsonify({"error": f"No data found for serial {serial}"}), 404
+        return jsonify({"error": f"No se encontraron métricas para el sensor {serial}"}), 404
+
 
 
 if __name__ == "__main__":

@@ -78,12 +78,43 @@ def calidad_aire():
                     "ts": r.get("ts", "")
               }
 
-
     if resultados:
         return jsonify(resultados)
     else:
         return jsonify({"error": f"No se encontraron métricas para el sensor {SENSOR_MT15_SERIAL}"}), 404
 
+@app.route("/api/vitales")
+def vitales():
+    base_url = os.getenv("http://192.168.0.20:8123")  # ejemplo: http://192.168.1.100:8123
+    token = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiYTEzNzE5MmZmNGY0YTZiYTlmNzVjNTZhM2I3OTgxMCIsImlhdCI6MTc0NDg5MjQzNiwiZXhwIjoyMDYwMjUyNDM2fQ.beE_tsQfdFDHij9Yeax_XYRVKZX7ORsxoIA_B8e-4nc")        # token de acceso largo de Home Assistant
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    sensores = {
+        "heartRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
+        "breathRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
+    }
+
+    resultados = {}
+    for nombre, entidad in sensores.items():
+        url = f"{base_url}/api/states/{entidad}"
+        try:
+            res = requests.get(url, headers=headers)
+            if res.status_code == 200:
+                datos = res.json()
+                resultados[nombre] = {
+                    "value": datos.get("state"),
+                    "unit": datos.get("attributes", {}).get("unit_of_measurement", "")
+                }
+            else:
+                resultados[nombre] = {"error": f"Error {res.status_code}"}
+        except Exception as e:
+            resultados[nombre] = {"error": str(e)}
+
+    return jsonify(resultados)
 
 
 

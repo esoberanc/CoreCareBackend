@@ -33,24 +33,52 @@ def puerta():
 
 @app.route("/api/calidad-aire")
 def calidad_aire():
-    serial = request.args.get("serial")
-    if not serial:
-        return jsonify({"error": "Falta el parámetro serial"}), 400
-
     url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
     res = requests.get(url, headers=HEADERS)
 
     if res.status_code != 200:
-        return jsonify({
-            "error": "Meraki API call failed",
-            "status_code": res.status_code,
-            "message": res.text
-        }), res.status_code
+        return jsonify({"error": "Meraki API error", "status": res.status_code}), res.status_code
 
     try:
         readings = res.json()
-    except Exception as e:
-        return jsonify({"error": "No se pudo decodificar JSON", "detalle": str(e), "raw": res.text}), 500
+    except:
+        return jsonify({"error": "No se pudo parsear la respuesta de Meraki"}), 500
+
+    resultados = {}
+    for r in readings:
+        if r.get("serial") != SENSOR_MT15_SERIAL:
+            continue
+        metrica = r.get("metric")
+        if not metrica:
+            continue
+
+        valor = None
+        if metrica == "co2":
+            valor = r.get("co2", {}).get("concentration")
+        elif metrica == "temperature":
+            valor = r.get("temperature", {}).get("celsius")
+        elif metrica == "humidity":
+            valor = r.get("humidity", {}).get("relativePercentage")
+        elif metrica == "pm25":
+            valor = r.get("pm25", {}).get("concentration")
+        elif metrica == "noise":
+            valor = r.get("noise", {}).get("ambient", {}).get("level")
+        elif metrica == "tvoc":
+            valor = r.get("tvoc", {}).get("concentration")
+        elif metrica == "indoorAirQuality":
+            valor = r.get("indoorAirQuality", {}).get("score")
+
+        if valor is not None:
+            resultados[metrica] = {
+                "value": valor,
+                "ts": r.get("ts", "")
+            }
+
+    if resultados:
+        return jsonify(resultados)
+    else:
+        return jsonify({"error": f"No se encontraron métricas para el sensor {SENSOR_MT15_SERIAL}"}), 404
+
 
     resultados = {}
     for r in readings:

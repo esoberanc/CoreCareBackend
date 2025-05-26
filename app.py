@@ -2,8 +2,10 @@ from flask import Flask, jsonify
 import requests
 import os
 from flask import request
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)
 
 MERAKI_API_KEY = os.getenv("MERAKI_API_KEY")
 ORGANIZATION_ID = os.getenv("MERAKI_ORG_ID")

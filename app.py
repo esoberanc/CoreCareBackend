@@ -45,9 +45,11 @@ def calidad_aire():
         return jsonify({"error": "No se pudo parsear la respuesta de Meraki"}), 500
 
     resultados = {}
-    for r in readings:
-        if r.get("serial") != SENSOR_MT15_SERIAL:
-            continue
+for sensor in readings:
+    if sensor.get("serial") != SENSOR_MT15_SERIAL:
+        continue
+
+    for r in sensor.get("readings", []):
         metrica = r.get("metric")
         if not metrica:
             continue
@@ -73,6 +75,7 @@ def calidad_aire():
                 "value": valor,
                 "ts": r.get("ts", "")
             }
+
 
     if resultados:
         return jsonify(resultados)

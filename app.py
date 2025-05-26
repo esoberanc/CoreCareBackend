@@ -80,43 +80,6 @@ def calidad_aire():
         return jsonify({"error": f"No se encontraron métricas para el sensor {SENSOR_MT15_SERIAL}"}), 404
 
 
-    resultados = {}
-    for r in readings:
-        if r.get("serial") != serial:
-         continue
-
-        metrica = r.get("metric")
-        if not metrica:
-         continue  # si no hay metrica, saltamos
-
-    valor = None
-
-    if metrica == "co2":
-        valor = r.get("co2", {}).get("concentration")
-    elif metrica == "temperature":
-        valor = r.get("temperature", {}).get("celsius")
-    elif metrica == "humidity":
-        valor = r.get("humidity", {}).get("relativePercentage")
-    elif metrica == "pm25":
-        valor = r.get("pm25", {}).get("concentration")
-    elif metrica == "noise":
-        valor = r.get("noise", {}).get("ambient", {}).get("level")
-    elif metrica == "tvoc":
-        valor = r.get("tvoc", {}).get("concentration")
-    elif metrica == "indoorAirQuality":
-        valor = r.get("indoorAirQuality", {}).get("score")
-
-    resultados[metrica] = {
-        "value": valor,
-        "ts": r.get("ts", "")
-    }
-
-
-    if resultados:
-        return jsonify(resultados)
-    else:
-        return jsonify({"error": f"No se encontraron métricas para el sensor {serial}"}), 404
-
 
 
 

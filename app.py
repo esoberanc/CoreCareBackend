@@ -47,7 +47,7 @@ def calidad_aire():
     resultados = {}
     for sensor in readings:
         if sensor.get("serial") != SENSOR_MT15_SERIAL:
-        continue
+         continue
 
     for r in sensor.get("readings", []):
         metrica = r.get("metric")

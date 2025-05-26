@@ -85,8 +85,8 @@ def calidad_aire():
 
 @app.route("/api/vitales")
 def vitales():
-    base_url = os.getenv("http://192.168.0.20:8123")  # ejemplo: http://192.168.1.100:8123
-    token = os.getenv("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJiYTEzNzE5MmZmNGY0YTZiYTlmNzVjNTZhM2I3OTgxMCIsImlhdCI6MTc0NDg5MjQzNiwiZXhwIjoyMDYwMjUyNDM2fQ.beE_tsQfdFDHij9Yeax_XYRVKZX7ORsxoIA_B8e-4nc")        # token de acceso largo de Home Assistant
+    base_url = os.getenv("HA_BASE_URL")  # ejemplo: http://192.168.1.100:8123
+    token = os.getenv("HA_TOKEN")        # token de acceso largo de Home Assistant
 
     headers = {
         "Authorization": f"Bearer {token}",

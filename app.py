@@ -49,34 +49,34 @@ def calidad_aire():
     resultados = {}
     for sensor in readings:
         if sensor.get("serial") != SENSOR_MT15_SERIAL:
-         continue
+             continue
 
-    for r in sensor.get("readings", []):
-        metrica = r.get("metric")
-        if not metrica:
-            continue
+        for r in sensor.get("readings", []):
+            metrica = r.get("metric")
+            if not metrica:
+                continue
 
-    valor = None
-    if metrica == "co2":
-        valor = r.get("co2", {}).get("concentration")
-    elif metrica == "temperature":
-        valor = r.get("temperature", {}).get("celsius")
-    elif metrica == "humidity":
-        valor = r.get("humidity", {}).get("relativePercentage")
-    elif metrica == "pm25":
-        valor = r.get("pm25", {}).get("concentration")
-    elif metrica == "noise":
-       valor = r.get("noise", {}).get("ambient", {}).get("level")
-    elif metrica == "tvoc":
-       valor = r.get("tvoc", {}).get("concentration")
-    elif metrica == "indoorAirQuality":
-        valor = r.get("indoorAirQuality", {}).get("score")
+            valor = None
+            if metrica == "co2":
+                valor = r.get("co2", {}).get("concentration")
+            elif metrica == "temperature":
+                valor = r.get("temperature", {}).get("celsius")
+            elif metrica == "humidity":
+                valor = r.get("humidity", {}).get("relativePercentage")
+            elif metrica == "pm25":
+                valor = r.get("pm25", {}).get("concentration")
+            elif metrica == "noise":
+               valor = r.get("noise", {}).get("ambient", {}).get("level")
+            elif metrica == "tvoc":
+               valor = r.get("tvoc", {}).get("concentration")
+            elif metrica == "indoorAirQuality":
+                valor = r.get("indoorAirQuality", {}).get("score")
 
-    if valor is not None:
-        resultados[metrica] = {
-            "value": valor,
-            "ts": r.get("ts", "")
-      }
+            if valor is not None:
+                resultados[metrica] = {
+                    "value": valor,
+                    "ts": r.get("ts", "")
+              }
 
 
     if resultados:

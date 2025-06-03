@@ -94,8 +94,8 @@ def vitales():
     }
 
     sensores = {
-        "heartRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
-        "breathRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
+        "heartRate": "sensor/sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
+        "breathRate": "sensor/sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
     }
 
     resultados = {}

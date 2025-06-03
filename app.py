@@ -85,8 +85,8 @@ def calidad_aire():
 
 @app.route("/api/vitales")
 def vitales():
-    base_url = os.getenv("HA_BASE_URL")  # ejemplo: http://192.168.1.100:8123
-    token = os.getenv("HA_TOKEN")        # token de acceso largo de Home Assistant
+    base_url = os.getenv("HA_BASE_URL")
+    token = os.getenv("HA_TOKEN")
 
     headers = {
         "Authorization": f"Bearer {token}",
@@ -94,15 +94,16 @@ def vitales():
     }
 
     sensores = {
-        "heartRate": "sensor/sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
-        "breathRate": "sensor/sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
+        "heartRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
+        "breathRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
     }
 
     resultados = {}
     for nombre, entidad in sensores.items():
         url = f"{base_url}/api/states/{entidad}"
         try:
-            res = requests.get(url, headers=headers)
+            res = requests.get(url, headers=headers, timeout=10)
+            print(f"[{nombre}] {url} -> {res.status_code}")
             if res.status_code == 200:
                 datos = res.json()
                 resultados[nombre] = {
@@ -115,6 +116,7 @@ def vitales():
             resultados[nombre] = {"error": str(e)}
 
     return jsonify(resultados)
+
 
 @app.route("/api/test-home-assistant")
 def test_home_assistant():

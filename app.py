@@ -121,23 +121,23 @@ def test_home_assistant():
     base_url = os.getenv("HA_BASE_URL")
     token = os.getenv("HA_TOKEN")
 
-    if not base_url or not token:
-        return jsonify({"error": "Faltan HA_BASE_URL o HA_TOKEN"}), 400
-
     url = f"{base_url}/api/"
     headers = {
-        "Authorization": f"Bearer {token}",
-        "Content-Type": "application/json"
+        "Authorization": f"Bearer {token}"
     }
 
     try:
-        res = requests.get(url, headers=headers)
-        if res.status_code == 200:
-            return jsonify({"ok": True, "mensaje": "Conexión exitosa con Home Assistant"})
-        else:
-            return jsonify({"ok": False, "error": f"Código {res.status_code}", "body": res.text}), 500
+        res = requests.get(url, headers=headers, timeout=10)
+        return jsonify({
+            "status_code": res.status_code,
+            "body": res.text,
+            "ok": res.ok
+        })
     except Exception as e:
-        return jsonify({"ok": False, "error": str(e)}), 500
+        return jsonify({
+            "error": str(e),
+            "ok": False
+        })
 
 
 

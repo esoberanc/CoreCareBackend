@@ -95,10 +95,8 @@ def vitales():
 
     sensores = {
         "heartRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_heart_rate",
-        "breathRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate",
-        "falling": "sensor.seeedstudio_mr60fda2_kit_b471ec_falling_information",
-        "presence": "binary_sensor.seeedstudio_mr60fda2_kit_b471ec_person_information"
-    }
+        "breathRate": "sensor.seeedstudio_mr60bha2_kit_b46e04_real_time_respiratory_rate"
+           }
 
     resultados = {}
     for nombre, entidad in sensores.items():
@@ -116,6 +114,36 @@ def vitales():
                 resultados[nombre] = {"error": f"Error {res.status_code}"}
         except Exception as e:
             resultados[nombre] = {"error": str(e)}
+
+    return jsonify(resultados)
+
+@app.route("/api/caidas")
+def caidas():
+    base_url = os.getenv("HA_BASE_URL")
+    token = os.getenv("HA_TOKEN")
+
+    headers = {
+        "Authorization": f"Bearer {token}",
+        "Content-Type": "application/json"
+    }
+
+    sensores = {
+        "falling": "sensor.seeedstudio_mr60fda2_kit_b471ec_falling_information",
+        "presence": "binary_sensor.seeedstudio_mr60fda2_kit_b471ec_person_information"
+    }
+
+    resultados = {}
+    for nombre, entidad in sensores.items():
+        url = f"{base_url}/api/states/{entidad}"
+        try:
+            res = requests.get(url, headers=headers, timeout=10)
+            if res.status_code == 200:
+                datos = res.json()
+                resultados[nombre] = datos.get("state", "unknown")
+            else:
+                resultados[nombre] = f"error {res.status_code}"
+        except Exception as e:
+            resultados[nombre] = str(e)
 
     return jsonify(resultados)
 

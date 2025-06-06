@@ -174,8 +174,13 @@ def test_home_assistant():
 @app.route("/api/sensores/<serial>")
 def obtener_sensor(serial):
     try:
+        print(f"🔍 Recibida petición para serial: {serial}")
+        print(f"👉 MT15: {SENSOR_MT15_SERIAL}")
+        print(f"👉 MT20: {SENSOR_MT20_SERIAL}")
+
         if serial == SENSOR_MT15_SERIAL:
             data = obtener_datos_sensor_mt15()
+            print(f"📦 Datos MT15: {data}")
             return jsonify({
                 "temperature": {
                     "value": data.get("temperature"),
@@ -189,6 +194,7 @@ def obtener_sensor(serial):
 
         elif serial == SENSOR_MT20_SERIAL:
             data = obtener_datos_sensor_mt20()
+            print(f"📦 Datos MT20: {data}")
             return jsonify({
                 "temperature": {
                     "value": data.get("temperature"),
@@ -200,10 +206,13 @@ def obtener_sensor(serial):
                 }
             })
 
+        print("❌ Serial no reconocido")
         return jsonify({"error": "Serial no reconocido"}), 404
 
     except Exception as e:
+        print(f"💥 Error interno: {e}")
         return jsonify({"error": str(e)}), 500
+
 
 
 if __name__ == "__main__":

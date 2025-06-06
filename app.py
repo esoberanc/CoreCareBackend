@@ -244,7 +244,7 @@ def obtener_sensor(serial):
             })
 
         elif serial == SENSOR_MT20_SERIAL:
-    data = obtener_datos_sensor_mt20()
+            data = obtener_datos_sensor_mt20()
     print(f"📦 Datos MT20: {data}")
     return jsonify({
         "door": {

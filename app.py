@@ -216,7 +216,8 @@ def obtener_datos_sensor_mt20():
     for r in readings:
         if r["serial"] == SENSOR_MT20_SERIAL and r["metric"] == "door":
             return {
-                "door": r["value"]  # True = abierta, False = cerrada
+                "open": r["value"],
+                "timestamp": r["ts"]
             }
 
     raise Exception("No se encontró lectura de apertura para el sensor MT20")

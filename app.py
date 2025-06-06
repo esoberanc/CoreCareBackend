@@ -253,8 +253,6 @@ def obtener_sensor(serial):
         }
     })
 
-                }
-            })
 
         print("❌ Serial no reconocido")
         return jsonify({"error": "Serial no reconocido"}), 404

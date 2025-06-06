@@ -245,13 +245,12 @@ def obtener_sensor(serial):
 
         elif serial == SENSOR_MT20_SERIAL:
             data = obtener_datos_sensor_mt20()
-    print(f"📦 Datos MT20: {data}")
-    return jsonify({
-        "door": {
-            "value": data.get("door"),
-            "unit": "abierta" if data.get("door") else "cerrada"
-        }
-    })
+            print(f"📦 Datos MT20: {data}")
+            return jsonify({
+                "open": data.get("open"),
+                "timestamp": data.get("timestamp")
+            })
+
 
 
         print("❌ Serial no reconocido")

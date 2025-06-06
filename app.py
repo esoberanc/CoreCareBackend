@@ -236,7 +236,7 @@ def obtener_sensor(serial):
             return jsonify({
                 "temperature": {
                     "value": data.get("temperature"),
-                    "unit": "°C"
+                    "unit": "Celsius"
                 },
                 "humidity": {
                     "value": data.get("humidity"),

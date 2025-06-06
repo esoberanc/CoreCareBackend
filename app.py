@@ -171,6 +171,29 @@ def test_home_assistant():
             "ok": False
         })
 
+@app.route("/api/sensores/<serial>")
+def datos_sensor_por_serial(serial):
+    url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
+    try:
+        res = requests.get(url, headers=HEADERS, timeout=10)
+        if res.status_code != 200:
+            return jsonify({"error": "Error al acceder a la API de Meraki"}), res.status_code
+
+        data = res.json()
+        for sensor in data:
+            if sensor.get("serial") == serial:
+                lectura = {}
+                for reading in sensor.get("readings", []):
+                    if "temperature" in reading:
+                        lectura["temperature"] = reading["temperature"].get("celsius")
+                    if "humidity" in reading:
+                        lectura["humidity"] = reading["humidity"].get("relativePercentage")
+                return jsonify(lectura)
+
+        return jsonify({"error": f"Sensor {serial} no encontrado"}), 404
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 if __name__ == "__main__":

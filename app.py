@@ -172,25 +172,34 @@ def test_home_assistant():
         })
 
 @app.route("/api/sensores/<serial>")
-def datos_sensor_por_serial(serial):
-    url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
-    try:
-        res = requests.get(url, headers=HEADERS, timeout=10)
-        if res.status_code != 200:
-            return jsonify({"error": "Error al acceder a la API de Meraki"}), res.status_code
+def obtener_sensor(serial):
+    if serial == SENSOR_MT15_SERIAL:
+        data = obtener_datos_sensor_mt15()
+        return jsonify({
+            "temperature": {
+                "value": data.get("temperature"),
+                "unit": "°C"
+            },
+            "humidity": {
+                "value": data.get("humidity"),
+                "unit": "%"
+            }
+        })
 
-        data = res.json()
-        for sensor in data:
-            if sensor.get("serial") == serial:
-                lectura = {}
-                for reading in sensor.get("readings", []):
-                    if "temperature" in reading:
-                        lectura["temperature"] = reading["temperature"].get("celsius")
-                    if "humidity" in reading:
-                        lectura["humidity"] = reading["humidity"].get("relativePercentage")
-                return jsonify(lectura)
+    elif serial == SENSOR_MT20_SERIAL:
+        data = obtener_datos_sensor_mt20()
+        return jsonify({
+            "temperature": {
+                "value": data.get("temperature"),
+                "unit": "°C"
+            },
+            "humidity": {
+                "value": data.get("humidity"),
+                "unit": "%"
+            }
+        })
 
-        return jsonify({"error": f"Sensor {serial} no encontrado"}), 404
+    return jsonify({"error": "Serial no reconocido"}), 404
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

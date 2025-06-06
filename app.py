@@ -173,33 +173,34 @@ def test_home_assistant():
 
 @app.route("/api/sensores/<serial>")
 def obtener_sensor(serial):
-    if serial == SENSOR_MT15_SERIAL:
-        data = obtener_datos_sensor_mt15()
-        return jsonify({
-            "temperature": {
-                "value": data.get("temperature"),
-                "unit": "°C"
-            },
-            "humidity": {
-                "value": data.get("humidity"),
-                "unit": "%"
-            }
-        })
+    try:
+        if serial == SENSOR_MT15_SERIAL:
+            data = obtener_datos_sensor_mt15()
+            return jsonify({
+                "temperature": {
+                    "value": data.get("temperature"),
+                    "unit": "°C"
+                },
+                "humidity": {
+                    "value": data.get("humidity"),
+                    "unit": "%"
+                }
+            })
 
-    elif serial == SENSOR_MT20_SERIAL:
-        data = obtener_datos_sensor_mt20()
-        return jsonify({
-            "temperature": {
-                "value": data.get("temperature"),
-                "unit": "°C"
-            },
-            "humidity": {
-                "value": data.get("humidity"),
-                "unit": "%"
-            }
-        })
+        elif serial == SENSOR_MT20_SERIAL:
+            data = obtener_datos_sensor_mt20()
+            return jsonify({
+                "temperature": {
+                    "value": data.get("temperature"),
+                    "unit": "°C"
+                },
+                "humidity": {
+                    "value": data.get("humidity"),
+                    "unit": "%"
+                }
+            })
 
-    return jsonify({"error": "Serial no reconocido"}), 404
+        return jsonify({"error": "Serial no reconocido"}), 404
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500

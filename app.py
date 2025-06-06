@@ -171,6 +171,57 @@ def test_home_assistant():
             "ok": False
         })
 
+def obtener_datos_sensor_mt15():
+    url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
+    res = requests.get(url, headers=HEADERS)
+
+    if res.status_code != 200:
+        raise Exception("Meraki API error")
+
+    readings = res.json()
+    resultados = {}
+
+    for sensor in readings:
+        if sensor.get("serial") != SENSOR_MT15_SERIAL:
+            continue
+
+        for r in sensor.get("readings", []):
+            metrica = r.get("metric")
+            if not metrica:
+                continue
+
+            valor = None
+            if metrica == "temperature":
+                valor = r.get("temperature", {}).get("celsius")
+            elif metrica == "humidity":
+                valor = r.get("humidity", {}).get("relativePercentage")
+
+            if valor is not None:
+                resultados[metrica] = valor
+
+    return {
+        "temperature": resultados.get("temperature"),
+        "humidity": resultados.get("humidity")
+    }
+
+def obtener_datos_sensor_mt20():
+    url = f"https://api.meraki.com/api/v1/organizations/{ORGANIZATION_ID}/sensor/readings/latest"
+    res = requests.get(url, headers=HEADERS)
+
+    if res.status_code != 200:
+        raise Exception("Meraki API error")
+
+    readings = res.json()
+
+    for r in readings:
+        if r["serial"] == SENSOR_MT20_SERIAL and r["metric"] == "door":
+            return {
+                "door": r["value"]  # True = abierta, False = cerrada
+            }
+
+    raise Exception("No se encontró lectura de apertura para el sensor MT20")
+
+
 @app.route("/api/sensores/<serial>")
 def obtener_sensor(serial):
     try:
@@ -193,16 +244,15 @@ def obtener_sensor(serial):
             })
 
         elif serial == SENSOR_MT20_SERIAL:
-            data = obtener_datos_sensor_mt20()
-            print(f"📦 Datos MT20: {data}")
-            return jsonify({
-                "temperature": {
-                    "value": data.get("temperature"),
-                    "unit": "°C"
-                },
-                "humidity": {
-                    "value": data.get("humidity"),
-                    "unit": "%"
+    data = obtener_datos_sensor_mt20()
+    print(f"📦 Datos MT20: {data}")
+    return jsonify({
+        "door": {
+            "value": data.get("door"),
+            "unit": "abierta" if data.get("door") else "cerrada"
+        }
+    })
+
                 }
             })
 
